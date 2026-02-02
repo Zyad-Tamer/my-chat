@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real Connect</title>
+  <style>
+    body { margin: 0; background: #121212; color: #fff; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    header { padding: 10px; background: #1e1e1e; display: flex; justify-content: space-between; }
+    main { flex: 1; display: flex; }
+    .video-area { flex: 1; display: grid; grid-template-columns: 1fr 1fr; background: #000; }
+    video { width: 100%; height: 100%; object-fit: cover; background: #222; }
+    .my-video { transform: scaleX(-1); }
+    .sidebar { width: 300px; background: #1e1e1e; display: flex; flex-direction: column; border-left: 1px solid #333; }
+    .chat-log { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
+    .controls { padding: 10px; border-top: 1px solid #333; display: flex; flex-direction: column; gap: 8px; }
+    .msg { padding: 6px 10px; border-radius: 8px; max-width: 85%; font-size: 0.9rem; }
+    .stranger { background: #333; align-self: flex-start; }
+    .you { background: #7c4dff; align-self: flex-end; }
+    .sys { align-self: center; font-size: 0.8rem; color: #777; margin: 5px 0; }
+    input[type="text"] { padding: 8px; border-radius: 4px; border: 1px solid #444; background: #000; color: #fff; outline: none; }
+    .btn-group { display: flex; gap: 8px; }
+    button { flex: 1; padding: 10px; border: none; color: #fff; border-radius: 4px; font-weight: 600; cursor: pointer; }
+    .btn-next { background: #00b894; }
+    .btn-stop { background: #ff7675; }
+    .btn-send { background: #7c4dff; width: 70px; }
+    .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 10; }
+    .overlay.active { display: flex; }
+    .spinner { color: #7c4dff; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+    @media (max-width: 700px) { main { flex-direction: column; } .video-area { height: 50%; } .sidebar { height: 50%; width: 100%; } }
+  </style>
+</head>
+<body>
+<header>
+  <div style="font-weight: bold; color: #7c4dff;">RealConnect</div>
+  <div id="status">Connecting...</div>
+</header>
+<main>
+  <div class="video-area">
+    <div style="position: relative;">
+      <video id="remoteVideo" autoplay playsinline></video>
+      <div style="position:absolute; bottom:5px; left:5px; background:rgba(0,0,0,0.5); padding:2px 5px; font-size:10px;">Stranger</div>
+      <div id="searchOverlay" class="overlay"><div class="spinner">Searching...</div></div>
+    </div>
+    <div style="position: relative;">
+      <video id="localVideo" autoplay playsinline muted class="my-video"></video>
+      <div style="position:absolute; bottom:5px; left:5px; background:rgba(0,0,0,0.5); padding:2px 5px; font-size:10px;">You</div>
+    </div>
+  </div>
+  <aside class="sidebar">
+    <div class="chat-log" id="chatLog"><div class="sys">Waiting for camera...</div></div>
+    <div class="controls">
+      <div class="btn-group"><button class="btn-stop" onclick="stopChat()">Stop</button><button class="btn-next" onclick="nextChat()">Next</button></div>
+      <div style="display:flex; gap:5px;"><input type="text" id="msgInput" placeholder="Message..." onkeypress="if(event.key==='Enter') sendMsg()" /><button class="btn-send" onclick="sendMsg()">Send</button></div>
+    </div>
+  </aside>
+</main>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="client.js"></script>
+</body>
+</html>
